@@ -14,5 +14,12 @@ export class CreateUserDTO{
         minLowercase:0,
         minSymbols:0,
     })
+    /*
+        versão na unha
+        @IsString()
+        @MinLength(6)
+        password:string
+    */
+
     password:string;
 }
