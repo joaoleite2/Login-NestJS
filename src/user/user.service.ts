@@ -32,6 +32,7 @@ export class UserService{
         return this.prisma.user.findMany({})
     }
     async show(id:number){
+        await this.exists(id);
         return this.prisma.user.findUnique({
             where:{
                 id
@@ -72,7 +73,11 @@ export class UserService{
 
     async exists (id:number){
         //isso aqui é uma exceção para caso o usuário não exista
-        if(!(await this.show(id))){
+        if(!(await this.prisma.user.count({//count retorna se existe algum id daquele, ou não
+            where:{
+                id
+            }
+        }))){
             //Reporta a exceção
             throw new NotFoundException(`O usuário ${id} não existe.`)
         }
