@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
 
 @Module({
-    providers:[PrismaService],//tudo que importar este módulo precisa ter acesso ao meu service
-    exports:[PrismaService]
+    providers:[PrismaService],//Declarando que o prisma faz parte deste módulo
+    exports:[PrismaService],//dando acesso ao PrismaService
 })
 export class PrismaModule{}
