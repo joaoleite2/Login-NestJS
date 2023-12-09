@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
@@ -39,6 +39,8 @@ export class UserService{
         })
     }
     async update(id:number, {email,name,password,bio}:UpdatePutUserDTO){
+        await this.exists(id);
+
         if(bio===undefined){
             bio='';
         }
@@ -50,12 +52,29 @@ export class UserService{
         })
     }
     async updatePartial(id:number,data:UpdatePatchUserDTO){
-        console.log({data})
+        await this.exists(id);
         return this.prisma.user.update({
             data,
             where:{
                 id
             }
         })
+    }
+    async delete(id:number){
+        await this.exists(id);
+
+        return this.prisma.user.delete({
+            where:{
+                id
+            }
+        })
+    }
+
+    async exists (id:number){
+        //isso aqui é uma exceção para caso o usuário não exista
+        if(!(await this.show(id))){
+            //Reporta a exceção
+            throw new NotFoundException(`O usuário ${id} não existe.`)
+        }
     }
 }
