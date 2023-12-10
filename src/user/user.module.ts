@@ -8,7 +8,7 @@ import { UserIdCheckMiddleware } from "src/middlewares/user-id-check.middleware"
     imports:[PrismaModule],//módulos que eu quero importar
     controllers:[UserController],//o que trata as reqs
     providers:[UserService],//quais são as classes que vão prover um serviço que podem ser injetadas
-    exports:[],//recursos que eu posso exportar para outro possível módulo
+    exports:[UserService],//recursos que eu posso exportar para outro possível módulo
 })
 
 
