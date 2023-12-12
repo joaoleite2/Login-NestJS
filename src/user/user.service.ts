@@ -3,21 +3,22 @@ import { CreateUserDTO } from "./dto/create-user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UserService{
 
     constructor(private readonly prisma:PrismaService){}//toda vez que necessito de outro serviço devo chamar pelo constructor
 
-    async create({email,name,password,bio,role}:CreateUserDTO){
+    async create(data:CreateUserDTO){
+
+        const salt = await bcrypt.genSalt();
+
+        data.password = await bcrypt.hash(data.password, salt);
+        
         return this.prisma.user.create({
-            data:{
-                email,
-                name,
-                password,
-                bio,
-                role
-            },
+            data,
     //poderia também fazer desta forma:
     // async create(data:CreateUserDTO){
     //     return this.prisma.user.create({
@@ -43,6 +44,11 @@ export class UserService{
     async update(id:number, {email,name,password,bio,role}:UpdatePutUserDTO){
         await this.exists(id);
 
+        const salt = await bcrypt.genSalt();
+
+        password = await bcrypt.hash(password, salt);
+        
+
         if(bio===undefined){
             bio='';
         }
@@ -55,6 +61,13 @@ export class UserService{
     }
     async updatePartial(id:number,data:UpdatePatchUserDTO){
         await this.exists(id);
+
+        if(data.password){
+            const salt = await bcrypt.genSalt();
+
+            data.password = await bcrypt.hash(data.password, salt);    
+        }
+        
         return this.prisma.user.update({
             data,
             where:{
