@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -7,28 +7,54 @@ import { UserService } from "src/user/user.service";
 
 @Injectable()
 export class AuthService{
+
+    private issuer = 'login';
+    private audience = 'users';
+
     constructor(
         private readonly jwtService:JwtService, 
         private readonly prisma:PrismaService,
         private readonly userService:UserService
     ){}
 
-        async createToken(user:User){
+        async createToken(user:User){//criar token
             return{
                 acessToken:this.jwtService.sign({//conteúdo que vai dentro do token
                     id:user.id,
                     email:user.email,
-                    bio:user.bio
+                    bio:user.bio,
+                    name:user.name
+                    //campos que eu quero que permaneça no payload
                 },{
-                    expiresIn:'7 days',
-                    subject: String(user.id),
-                    issuer:'Login',
-                    audience:'users'
+                    //coisas que eu desejo verificar no payload
+                    expiresIn:'5 days',//quando expira
+                    subject: String(user.id),//conteúdo do token
+                    issuer: this.issuer,//objetivo desse token
+                    audience:this.audience,//público desse token gerado
+                    //notBefore: usado para fazer com que o token seja liberado depois
                 })
             }
         }
-        async checkToken(token: string){
-            //return this.jwtService.verify()
+        async checkToken(token: string){//checar token
+
+        try{
+            const data = this.jwtService.verify(token,{
+                audience: this.audience,
+                issuer: this.issuer,
+            })
+            return data;
+        } catch (e){
+            throw new BadRequestException(e)
+        }
+        }
+
+        async isValidToken(token:string){
+            try{
+                this.checkToken(token);
+                return true;
+            } catch(e){
+                return false;
+            }
         }
 
         async login(email:string,password:string){
