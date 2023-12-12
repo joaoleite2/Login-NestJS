@@ -3,9 +3,10 @@ import { UserController } from "./user.controller";
 import { UserService } from "./user.service";
 import { PrismaModule } from "src/prisma/prisma.module";
 import { UserIdCheckMiddleware } from "src/middlewares/user-id-check.middleware";
+import { AuthModule } from "src/auth/auth.module";
 
 @Module({
-    imports:[PrismaModule],//módulos que eu quero importar
+    imports:[PrismaModule, AuthModule],//módulos que eu quero importar
     controllers:[UserController],//o que trata as reqs
     providers:[UserService],//quais são as classes que vão prover um serviço que podem ser injetadas
     exports:[UserService],//recursos que eu posso exportar para outro possível módulo

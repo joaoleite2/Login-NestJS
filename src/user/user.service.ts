@@ -9,13 +9,14 @@ export class UserService{
 
     constructor(private readonly prisma:PrismaService){}//toda vez que necessito de outro serviço devo chamar pelo constructor
 
-    async create({email,name,password,bio}:CreateUserDTO){
+    async create({email,name,password,bio,role}:CreateUserDTO){
         return this.prisma.user.create({
             data:{
                 email,
                 name,
                 password,
                 bio,
+                role
             },
     //poderia também fazer desta forma:
     // async create(data:CreateUserDTO){
@@ -39,14 +40,14 @@ export class UserService{
             }
         })
     }
-    async update(id:number, {email,name,password,bio}:UpdatePutUserDTO){
+    async update(id:number, {email,name,password,bio,role}:UpdatePutUserDTO){
         await this.exists(id);
 
         if(bio===undefined){
             bio='';
         }
         return this.prisma.user.update({
-            data:{email,name,password,bio},
+            data:{email,name,password,bio,role},
             where:{
                 id
             }
