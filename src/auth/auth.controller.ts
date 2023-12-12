@@ -10,7 +10,6 @@ import { AuthService } from "./auth.service";
 export class AuthController{
     
     constructor(
-        private readonly userService:UserService,
         private readonly authService:AuthService,
     ){}
 
@@ -21,7 +20,7 @@ export class AuthController{
 
     @Post('register')
     async register(@Body()body:AuthRegisterDTO){
-        return this.userService.create(body);
+        return this.authService.register(body);
     }
 
     @Post('forget')
