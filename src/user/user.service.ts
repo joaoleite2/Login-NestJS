@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { PrismaService } from "src/prisma/prisma.service";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
@@ -12,6 +12,8 @@ export class UserService{
     constructor(private readonly prisma:PrismaService){}//toda vez que necessito de outro serviço devo chamar pelo constructor
 
     async create(data:CreateUserDTO){
+
+        await this.existsEmail(data.email);
 
         const salt = await bcrypt.genSalt();
 
@@ -94,6 +96,16 @@ export class UserService{
         }))){
             //Reporta a exceção
             throw new NotFoundException(`O usuário ${id} não existe.`)
+        }
+    }
+
+    async existsEmail (email:string){
+        if((await this.prisma.user.count({
+            where:{
+                email
+            }
+        }))){
+            throw new BadRequestException(`Email já cadastrado`)
         }
     }
 }
